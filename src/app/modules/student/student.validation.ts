@@ -32,7 +32,7 @@ export const studentZodValidationSchema = z.object({
 
     name: userNameValidationSchema,
 
-    gender: z.enum(["male", "female"]),
+    gender: z.enum(["male", "female", "other"]),
 
     dateOfBirth: z.string().min(1, "Date of birth is required"),
 
