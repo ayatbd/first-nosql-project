@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { StudentServices } from "./student.service";
-import Joi from "joi";
-import { studentValidationSchema } from "./student.validation";
+import studentZodValidationSchema from "./student.validation";
 
 // -------------------------
 // CREATE STUDENT
@@ -11,20 +10,24 @@ export const createStudent = async (req: Request, res: Response) => {
         const studentData = req.body.student;
 
         // creating schema validation using joi
-        const { error, value } = studentValidationSchema.validate(studentData, {
-            abortEarly: false,
-        });
+        // const { error, value } = studentValidationSchema.validate(studentData, {
+        //     abortEarly: false,
+        // });
 
-        if (error) {
-            return res.status(400).json({
-                success: false,
-                errors: error.details.map(d => d.message),
-            });
-        }
+        // if (error) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         errors: error.details.map(d => d.message),
+        //     });
+        // }
 
         // const newStudent = await StudentModel.create(studentData);
 
-        const newStudent = await StudentServices.createStudentIntoDB(value);
+
+        // creating schema validation using jod
+        const zodValidatedData = studentZodValidationSchema.parse(studentData);
+
+        const newStudent = await StudentServices.createStudentIntoDB(zodValidatedData);
 
         res.status(201).json({
             success: true,

@@ -1,76 +1,62 @@
-import Joi from "joi";
+import z from "zod";
 
-// ---------- Sub Schemas ----------
-
-// Name Validation
-const userNameValidationSchema = Joi.object({
-    firstName: Joi.string().trim().required(),
-    middleName: Joi.string().trim().optional(),
-    lastName: Joi.string().trim().required(),
+// Guardian
+const guardianValidationSchema = z.object({
+    fatherName: z.string().min(1, "Father name is required"),
+    fatherOccupation: z.string().min(1, "Father occupation is required"),
+    fatherContactNo: z.string().min(1, "Father contact number is required"),
+    motherName: z.string().min(1, "Mother name is required"),
+    motherOccupation: z.string().min(1, "Mother occupation is required"),
+    motherContactNo: z.string().min(1, "Mother contact number is required"),
 });
 
-// Guardian Validation
-const guardianValidationSchema = Joi.object({
-    fatherName: Joi.string().trim().required(),
-    fatherOccupation: Joi.string().trim().required(),
-    fatherContactNo: Joi.string().trim().required(),
-    motherName: Joi.string().trim().required(),
-    motherOccupation: Joi.string().trim().required(),
-    motherContactNo: Joi.string().trim().required(),
+// Local Guardian
+const localGuardianValidationSchema = z.object({
+    fatherName: z.string().min(1, "Local guardian name is required"),
+    occupation: z.string().min(1, "Occupation is required"),
+    contactNo: z.string().min(1, "Contact number is required"),
+    address: z.string().min(1, "Address is required"),
 });
 
-// Local Guardian Validation
-const localGuardianValidationSchema = Joi.object({
-    fatherName: Joi.string().trim().required(),
-    occupation: Joi.string().trim().required(),
-    contactNo: Joi.string().trim().required(),
-    address: Joi.string().trim().required(),
+// Name
+const userNameValidationSchema = z.object({
+    firstName: z.string().min(1, "First name is required"),
+    middleName: z.string().optional(),
+    lastName: z.string().min(1, "Last name is required"),
 });
 
-// ---------- Student Validation ----------
+// ---------- Student Schema ----------
 
-export const studentValidationSchema = Joi.object({
-    id: Joi.string().trim().required(),
+export const studentZodValidationSchema = z.object({
+    id: z.string().min(1, "Student ID is required"),
 
-    name: userNameValidationSchema.required(),
+    name: userNameValidationSchema,
 
-    gender: Joi.string()
-        .valid("male", "female")
-        .required(),
+    gender: z.enum(["male", "female"]),
 
-    dateOfBirth: Joi.string().required(), // keep string to match mongoose
+    dateOfBirth: z.string().min(1, "Date of birth is required"),
 
-    email: Joi.string()
-        .email()
-        .trim()
-        .required(),
+    email: z.string().email("Invalid email address"),
 
-    contactNo: Joi.string().trim().required(),
+    contactNo: z.string().min(1, "Contact number is required"),
 
-    emergencyContactNo: Joi.string().trim().required(),
+    emergencyContactNo: z.string().min(1, "Emergency contact number is required"),
 
-    bloodGroup: Joi.string().valid(
-        "A+",
-        "A-",
-        "B+",
-        "B-",
-        "AB+",
-        "AB-",
-        "O+",
-        "O-"
-    ),
+    bloodGroup: z
+        .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+        .optional(),
 
-    presentAddress: Joi.string().trim().required(),
+    presentAddress: z.string().min(1, "Present address is required"),
 
-    permanentAddress: Joi.string().trim().required(),
+    permanentAddress: z.string().min(1, "Permanent address is required"),
 
-    guardian: guardianValidationSchema.required(),
+    guardian: guardianValidationSchema,
 
-    localGuardian: localGuardianValidationSchema.required(),
+    localGuardian: localGuardianValidationSchema,
 
-    profileImg: Joi.string().uri().optional(),
+    profileImg: z.string().url().optional(),
 
-    isActive: Joi.string()
-        .valid("active", "inActive")
-        .default("active"),
+    isActive: z.enum(["active", "inActive"]).default("active"),
 });
+
+export default studentZodValidationSchema;
